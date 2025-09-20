@@ -23,6 +23,7 @@ class UserRepository
 
     public function create(array $data)
     {
+        // return $data;
         return User::create($data);
     }
 

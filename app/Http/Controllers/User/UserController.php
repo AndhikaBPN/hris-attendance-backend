@@ -37,25 +37,27 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = $this->userService->createUser($request->validated());
-
+        $user = $request->validated();
+        
         $photoPath = null;
         if ($request->hasFile('photo')) {
             $result = $this->upload(
                 file: $request->file('photo'),
                 path: 'image/photos'
             );
-
+            
             if ($result['success']) {
                 $photoPath = $result['path'];
             } else {
                 return $this->errorResponse($result['message'], 500);
             }
         }
-
-        if ($photoPath) {
-            $data['photo'] = $photoPath;
-        }
+        
+        $user['photo'] = $photoPath ?? null;
+        $user['phone'] = $request->input('phone');
+        $user['address'] = $request->input('address');
+        
+        $user = $this->userService->createUser($user);
 
         return $this->successResponse($user, 'User created successfully', 200);
     }
